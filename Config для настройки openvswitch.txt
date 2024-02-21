@@ -1,0 +1,9 @@
+apt-get install openvswitch
+systemctl enable openvswitch
+ovs-vsctl add-br ovs0 - создание группы
+ovs-vsctl add-port ovs0 eth0 - добавление интрефейса в группу
+ovs-vsctl set port ens33 trunk=100,200,300,400 - добавления порта в сетку и назначение влана
+ovs-vsctl set port ens34 tag=100
+ifconfig ens33 0
+ifconfig ens34 0
+ifconfig ovs0 up

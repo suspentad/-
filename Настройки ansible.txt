@@ -1,0 +1,12 @@
+установка ansible
+apt-get update
+apt-get install ansible 
+если потребуется: 
+apt-get install python-module-pip
+pip install simplejson
+
+Создаем inventory файл
+vim /etc/ansible/inventory.txt
+заходим в /etc/ansible/ansible.cfg
+Меняем на наш инвентори файл
+Заполняем его следующим содержанием:

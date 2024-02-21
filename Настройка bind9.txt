@@ -1,0 +1,76 @@
+1.Установим пакет "bind":
+apt-get update && apt-get install bind -y
+2.Редактируем конфигурационный файл по пути "/var/lib/bind/etc/options.conf":
+vim /var/lib/bind/etc/options.conf
+
+listen-on { any; };
+recursion yes;
+allow-query { any; };
+forwarders {
+        адрес;
+};
+
+3.При помощи утилиты "named-checkconf" проверяем наличие ошибок в конфигурационном файле, если результат выполнения данной команды пуст - значит ошибок нет.
+4. Выполняем запуск и добавление в автозагрузку DNS - сервера:
+systemctl enable --now bind
+5. Правим конфигурационный файл "/etc/resolv.conf":
+
+Создание зоны прямого просмотра и добавление записей различного типа
+1. Редактируем конфигурационный файл по пути "/var/lib/bind/etc/local.conf" отвечающий за настройку информации о зонах:
+vim /var/lib/bind/etc/local.conf
+*vim /etc/bind/rfc1912.conf
+zone "company.prof" {
+	type master;
+	file "company.prof.db";
+};
+
+2. Скопировать пример прямой зоны:
+cp /var/lib/bind/etc/zone/{localdomain,company.prof.db}
+3. Выдать права:
+chown named. /var/lib/bind/etc/zone/company.prof.db
+chmod 600 /var/lib/bind/etc/zone/company.prof.db
+
+Настраиваем зону прямого просмотра:
+vim /var/lib/bind/etc/zone/company.prof.db
+
+... SOA  Название зоны root.название зоны 
+NS Название зоны.
+Название зоны тип записи ip address
+
+ns.company.prof	A	192.168.0.10(Свой)
+srv-hq	IN	A	192.168.0.10
+test	IN	A	192.168.0.10
+CLI	IN	A	192.168.0.15
+5. Утилитой "named-checkconf" с ключём "-z" проверяем что файл зоны "champ.first" не содержит ошибок и загружается:
+named-checkconf -z
+6. Перезагружаем DNS - сервер:
+systemctl restart bind
+
+
+Создание зоны обратного просмотра и добавление PTR записей
+1. Редактируем конфигурационный файл по пути "/var/lib/bind/etc/local.conf" отвечающий за настройку информации о зонах:
+vim /var/lib/bind/etc/local.conf
+*vim /etc/bind/rfc1912.conf
+
+zone "0.168.192.in-addr.arpa" {
+	type master;
+	file "0.168.192.db";
+	allow-update { none; };
+};
+
+2. Скопировать пример прямой зоны:
+cp /var/lib/bind/etc/zone/{127.in-addr.arpa,0.168.192.db}
+3. Выдать права:
+chown named. /var/lib/bind/etc/zone/0.168.192.db
+chmod 600 /var/lib/bind/etc/zone/0.168.192.db
+
+Настраиваем зону обратного просмотра:
+vim /var/lib/bind/etc/zone/0.168.192.db
+	SOA	company.prof. 	root.company.prof
+	IN	NS	company.prof
+10	IN	PTR	srv-hq.company.prof
+(Последний тег адресса)
+5. Утилитой "named-checkconf" с ключём "-z" проверяем что файл зоны "champ.first" не содержит ошибок и загружается:
+named-checkconf -z
+6. Перезагружаем DNS - сервер:
+systemctl restart bind
