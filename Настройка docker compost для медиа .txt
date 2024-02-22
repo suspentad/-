@@ -1,0 +1,45 @@
+Создаем нового пользователя ubuntu и директории для него
+useradd ubuntu -m -U -s /bin/bash
+passwd ubuntu
+создаем файл wiki.yml 
+создаем файл docker-compose.yum и заполняем его следующим содержанием:
+В домашней директории пользователя ubuntu создаем 
+Настройка docker compost для медиа вики
+# MediaWiki with MariaDB
+version: '3'
+services:
+  wiki:
+    image: mediawiki
+    restart: always
+    ports:
+      - 3030:80
+    links:
+      - db
+    volumes:
+      - images:/var/www/html/images
+      #- /home/ubuntu/LocalSettings.php:/var/www/html/LocalSettings.php
+    
+  db:
+    image: mysql
+    restart: always
+    environment:
+      MYSQL_DATABASE: mediawiki
+      MYSQL_USER: wiki
+      MYSQL_PASSWORD: P@ssw0rd
+      MYSQL_RANDOM_ROOT_PASSWORD: 'yes'
+    volumes:
+      - dbvolume:/var/lib/mysql
+
+volumes:
+  images:
+  dbvolume:
+  setting:
+
+
+Создаем контрейнер:
+docker-compose build
+
+Запускаем:
+docker-compose up
+Добавляем файл LocalSettings.php в нашу директории 
+После настройки базовых параметро, можно раскоментировать строчку
