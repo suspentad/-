@@ -1,0 +1,120 @@
+Настройка для RTR-HQ
+config
+vlan 100,200,300
+exit
+int te1/0/1.100
+ ip address 10.0.10.1/27
+ ip firewall disable
+exit
+int te1/0/1.200
+ ip address 10.0.10.33/27
+ ip firewall disable
+exit
+int te1/0/1.300
+ ip address 10.0.10.65/27
+ ip firewall disable
+exit
+int gi1/0/1
+ ip address 3.3.3.100/24
+ ip firewall disable
+exit
+ip dhcp-server
+ip dhcp-server pool CLI
+network 10.0.10.32/27
+address-range 10.0.10.33-10.0.10.60
+default-router 10.0.10.33
+dns-server 10.0.10.2
+exit
+
+router ospf 1
+area 0.0.0.0
+network 10.0.0.0/27
+network 10.0.0.32/27
+network 10.0.0.64/27
+network 3.3.3.0/24
+enable
+exit
+enable
+exit
+int te1/0/1.100
+ ip ospf instance 1
+ ip ospf
+exit
+int te1/0/1.200
+ ip ospf instance 1
+ ip ospf
+exit
+int te1/0/1.300
+ ip ospf instance 1
+ ip ospf
+exit
+int gi1/0/1
+ ip ospf instance 1
+ ip ospf
+exit
+
+do commit
+do confirm
+
+Настройка для ISP
+config
+int gi1/0/1
+ ip address 3.3.3.1/24
+ ip firewall disable
+exit
+int te1/0/1
+ ip address 4.4.4.1/24
+ ip firewall disable
+exit
+router ospf 1
+area 0.0.0.0
+network 4.4.4.0/24
+network 3.3.3.0/24
+enable
+exit
+enable
+exit
+int gi1/0/1
+ ip ospf instance 1
+ ip ospf
+exit
+int te1/0/1
+ ip ospf instance 1
+ ip ospf
+exit
+do commit
+do confirm
+
+Настройка для RTR-BR
+config
+int te1/0/1
+ ip address 4.4.4.100/24
+ ip firewall disable
+exit
+
+router ospf 1
+area 0.0.0.0
+network 4.4.4.0/24
+enable
+exit
+enable
+exit
+int te1/0/1
+ ip ospf instance 1
+ ip ospf
+exit
+do commit
+do confirm
+
+
+
+
+
+Очистка
+copy system:factory-config system:candidate-config
+y
+commit
+confirm
+
+ip link add link ens192 name ens192.200 type vlan id 200
+ip link ens192 type vlan id 200

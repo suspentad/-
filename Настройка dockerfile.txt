@@ -1,0 +1,62 @@
+Для начало работы нужно установить docker
+
+Установить docker можно следующей командой:
+# apt-get install docker-engine
+В старых репозиториях пакет называется docker-ce:
+# apt-get install docker-ce
+Затем необходимо запустить соответствующую службу:
+# systemctl enable --now docker
+
+Для установки образа
+docker run --rm -it alt
+docker run --rm -it alt:sisyphus
+
+Создаем файл name.txt b 
+vim name.txt
+Добавляем следующие содержание: experts
+
+Создаем файл скрипта
+
+vim file.sh
+Добавляем следующим содержимым
+#!/bin/bash
+echo "Hello, FIRPO Greetings from"
+cat name.txt
+Даем права файлу
+chmod 777 file.sh
+
+Создаем директорию 
+mkdir /usr/src/home
+
+Копируем туда файл name.txt и file.sh
+cp name.txt /usr/src/hello
+cp file.sh /usr/src/hello
+Теперь в usr/src/hello создаем Dockerfile
+
+vim Dockerfile
+
+Заполняем его следующим содержимым
+
+FROM alt:latest
+WORKDIR /usr/src/hello/
+COPY . /usr/src/hello/
+EXPOSE 5000
+CMD ["bash", "file.sh"]
+
+Находясь в usr/src/hello создаем контейнер
+docker build -t hellofirpo .
+
+Запускаем наш контейнер для проверки
+docker run hellofirpo
+
+
+Для просмотра списка контейниров
+docker ps -a
+
+Для просмотра images
+docker images 
+
+
+Для удаления сначало удаляем контейнер, потом images
+docker rm название
+docker rmi
