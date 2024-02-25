@@ -5,8 +5,16 @@ apt-get install ansible
 apt-get install python-module-pip
 pip install simplejson
 
-Создаем inventory файл
-vim /etc/ansible/inventory.txt
 заходим в /etc/ansible/ansible.cfg
 Меняем на наш инвентори файл
 Заполняем его следующим содержанием:
+inventory   = /etc/ansible/inventory.txt
+Создаем inventory файл
+vim /etc/ansible/inventory.txt
+Заполняем его по примеру:
+[Server]
+SRV-HQ ansible_host=10.0.0.2 ansible_user=user ansible_pass=resu
+И так далее
+
+Для проверки хостов
+ansible all --list-hosts
